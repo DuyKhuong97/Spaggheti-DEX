@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "hardhat": "^2.22.5",
+    "nodemon": "^3.1.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
