@@ -1,6 +1,7 @@
 import "./App.css";
 import Header from "./components/Header";
 import Swap from "./components/Swap";
+import Tokens from "./components/Token";
 import Pool from "./components/Pool";
 import { Routes, Route } from "react-router-dom";
 import { useConnect, useAccount } from "wagmi";
@@ -58,7 +59,7 @@ function App() {
 
   const handleConnect = async () => {
     try {
-      connect();
+      await connect();
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
     }
@@ -73,6 +74,7 @@ function App() {
             path="/"
             element={<Swap isConnected={isConnected} address={address} contract={handleConnect} />}
           />
+          <Route path="/Token" element={<Tokens />} />
           <Route path="/Pool" element={<Pool />} />
         </Routes>
       </div>
