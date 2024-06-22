@@ -6,21 +6,22 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Spaggheti.sol";
 
-contract LiquidityPool is Ownable {
+contract LiquidityPool {
     using Math for uint256;
 
     mapping(address => mapping(address => uint256)) public tokenReserves;
-    Spaggheti public spagghetiToken;
-    uint256 public constant rewardAmount = 1e16; // 0.1 SPD
+
+    uint256 public constant rewardAmount = 1e16;
     mapping(address => uint256) public lastClaimed;
     mapping(address => uint256) public dailyReward;
 
-    constructor(address spagghetiTokenAddress) 
-        Ownable(0xDCc6776B0a3FB62C8EC2494Ec45ac6503b9bA7E4)
+    Spaggheti public spagghetiToken;
     
-    {
-        spagghetiToken = Spaggheti(spagghetiTokenAddress);
+    constructor(){
+        spagghetiToken = Spaggheti(0x4FA5A5D1710BF5CD9F9A8719172DDD033caA32Fa);
+        spagghetiToken.grantMinterRole(address(this));    
     }
+
 
     function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) public {
         require(amountA > 0 && amountB > 0, "Must send tokens to add liquidity");
@@ -57,7 +58,7 @@ contract LiquidityPool is Ownable {
         
         require(fromReserve > 0 && toReserve > 0, "Invalid reserves");
 
-        uint256 fee = (fromAmount * 1) / 1000; // 0.1% fee
+        uint256 fee = (fromAmount * 1) / 1000; // fee for swap
         uint256 amountAfterFee = fromAmount - fee;
         
         toAmount = getAmountOfTokens(amountAfterFee, fromReserve, toReserve);
@@ -70,7 +71,7 @@ contract LiquidityPool is Ownable {
         tokenReserves[fromToken][toToken] += amountAfterFee;
         tokenReserves[toToken][fromToken] -= toAmount;
         
-        IERC20(fromToken).transfer(spagghetiToken.owner(), fee); // chuyển phí đến chủ sở hữu
+        IERC20(fromToken).transfer(spagghetiToken.owner(), fee); // Owner zone
         
         return toAmount;
     }
@@ -84,19 +85,20 @@ contract LiquidityPool is Ownable {
     }
 
     function _rewardUser(address user) internal {
-        uint256 currentDay = block.timestamp / 1 days;
+        uint256 currentDay = block.timestamp / (24*60*60);
         if (lastClaimed[user] < currentDay) {
             dailyReward[user] = 0;
             lastClaimed[user] = currentDay;
         }
-        require(dailyReward[user] < 5e17, "Daily reward limit reached"); // 0.5 SPD limit per day
+        require(dailyReward[user] < 5e16, "Daily reward limit reached"); // 0.5 SPD limit per day
 
         uint256 reward = rewardAmount;
-        if (dailyReward[user] + reward > 5e17) {
+        if (dailyReward[user] + reward > 5e16) {
             reward = 5e17 - dailyReward[user];
         }
 
         dailyReward[user] += reward;
-        spagghetiToken.mint(user, reward);
+        spagghetiToken.mintForPool(user, reward);
+        // spagghetiToken.mintForPool(user, reward);
     }
 }

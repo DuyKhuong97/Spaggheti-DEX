@@ -66,7 +66,6 @@ function Swap() {
         title="Select a token"
       >
         <div className="modalContent">
-          {/* Replace with a dummy token list or a API call to fetch tokens */}
           {[{ name: "Token 1", ticker: "TKN1", img: "" }, { name: "Token 2", ticker: "TKN2", img: "" }].map((token, i) => {
             return (
               <div
