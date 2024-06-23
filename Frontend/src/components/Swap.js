@@ -1,26 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { Input, Popover, Radio, Modal, message } from "antd";
+import React, { useState, useEffect, useContext } from "react";
+import { Input, Popover, Modal, message } from "antd";
 import {
   AccountBookOutlined,
   DownOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 
-function Swap() {
-  const [Slippage, setSlippage] = useState(2.5);
+import { ContextWeb3 } from "../context";
+import { ethers } from "ethers";
+
+function Swap({ isConnected, address }) {
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
-  const [tokenTwoAmount, setTokentwoAmount] = useState(null);
-  const [tokenOne, setTokenOne] = useState({ name: "", ticker: "", img: "" });
-  const [tokenTwo, setTokenTwo] = useState({ name: "", ticker: "", img: "" });
+  const [calculatedTokenTwoAmount, setCalculatedTokenTwoAmount] = useState(null);
+  const [tokenOne, setTokenOne] = useState({ address: "", ticker: "" });
+  const [tokenTwo, setTokenTwo] = useState({ address: "", ticker: "" });
   const [isOpen, setIsOpen] = useState(false);
   const [changeToken, setChangeToken] = useState(1);
+  const [poolTokens, setPoolTokens] = useState([]);
 
-  function handleSlippageChange(e) {
-    setSlippage(e.target.value);
-  } 
+  const { contract } = useContext(ContextWeb3);
 
-  function changeAmount(e) {
-    setTokenOneAmount(e.target.value);
+  useEffect(() => {
+    const fetchPoolTokens = async () => {
+      if (isConnected && contract) {
+        try {
+          const tokens = await contract.getAllTokens();
+          console.log("Tokens in pool:", tokens);
+          setPoolTokens(tokens);
+          if (tokens.length > 0) {
+            setTokenOne({ address: tokens[0], ticker: "Token 1" });
+            setTokenTwo({ address: tokens[0], ticker: "Token 2" });
+          }
+        } catch (error) {
+          console.error("Error fetching pool tokens:", error);
+          message.error("Failed to fetch tokens from pool");
+        }
+      }
+    };
+
+    fetchPoolTokens();
+  }, [isConnected, contract]);
+
+  async function changeAmount(e) {
+    const amount = e.target.value;
+    setTokenOneAmount(amount);
+    if (amount) {
+      try {
+        const calculatedAmount = await contract.getAmountOfTokens(
+          tokenOne.address,
+          tokenTwo.address,
+          ethers.utils.parseEther(amount.toString())
+        );
+        setCalculatedTokenTwoAmount(calculatedAmount.toString());
+      } catch (error) {
+        console.error("Error calculating token amount:", error);
+      }
+    } else {
+      setCalculatedTokenTwoAmount(null);
+    }
   }
 
   function switchToken() {
@@ -37,58 +74,55 @@ function Swap() {
 
   function modifyToken(token) {
     if (changeToken === 1) {
-      setTokenOne(token);
+      setTokenOne({ address: token, ticker: "Token 1" });
     } else {
-      setTokenTwo(token);
+      setTokenTwo({ address: token, ticker: "Token 2" });
     }
     setIsOpen(false);
   }
 
-  const settings = (
-    <>
-      <div>Slippage Tolerance</div>
-      <div>
-        <Radio.Group value={Slippage} onChange={handleSlippageChange}>
-          <Radio.Button value={0.5}>0.5%</Radio.Button>
-          <Radio.Button value={2.5}>2.5%</Radio.Button>
-          <Radio.Button value={5}>5.0%</Radio.Button>
-        </Radio.Group>
-      </div>
-    </>
-  );
+  async function handleSwap() {
+    try {
+      const tx = await contract.swap(
+        tokenOne.address,
+        tokenTwo.address,
+        ethers.utils.parseEther(tokenOneAmount.toString())
+      );
+      console.log("Swap transaction:", tx);
+      message.success("Swap successful!");
+    } catch (error) {
+      console.error("Error swapping tokens:", error);
+      message.error("Failed to swap tokens");
+    }
+  }
 
   return (
     <>
       <Modal
-        open={isOpen}
+        visible={isOpen}
         footer={null}
         onCancel={() => setIsOpen(false)}
         title="Select a token"
       >
         <div className="modalContent">
-          {[{ name: "Token 1", ticker: "TKN1", img: "" }, { name: "Token 2", ticker: "TKN2", img: "" }].map((token, i) => {
-            return (
-              <div
-                className="tokenChoice"
-                key={i}
-                onClick={() => modifyToken(token)}
-              >
-                <img src={token.img} alt={token.ticker} className="tokenLogo" />
-                <div className="tokenChoiceName">
-                  <div className="tokenName">{token.name}</div>
-                  <div className="tokenTicker">{token.ticker}</div>
-                </div>
-              </div>
-            );
-          })}
+          {poolTokens.map((token, index) => (
+            <div
+              className="tokenChoice"
+              key={index}
+              onClick={() => modifyToken(token)}
+            >
+              <div className="tokenName">{`Token ${index + 1}`}</div>
+              <div className="tokenTicker">{token}</div>
+            </div>
+          ))}
         </div>
       </Modal>
       <div className="tradeBox">
         <div className="tradeBoxHeader">
           <h4>swap</h4>
           <Popover
-            content={settings}
-            title="setting"
+            content={<div>Slippage Tolerance</div>}
+            title="Setting"
             trigger="click"
             placement="bottomRight"
           >
@@ -101,22 +135,28 @@ function Swap() {
             value={tokenOneAmount}
             onChange={changeAmount}
           />
-          <Input placeholder="0" value={tokenTwoAmount} disabled={true} />
+          <Input
+            placeholder="0"
+            value={calculatedTokenTwoAmount}
+            disabled={true}
+          />
           <div className="switchButton" onClick={switchToken}>
             <AccountBookOutlined className="switchArrow" />
           </div>
           <div className="assetOne" onClick={() => openModal(1)}>
-            <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
             {tokenOne.ticker}
             <DownOutlined />
           </div>
           <div className="assetTwo" onClick={() => openModal(2)}>
-            <img src={tokenTwo.img} alt="assetOneLogo" className="assetLogo" />
             {tokenTwo.ticker}
             <DownOutlined />
           </div>
         </div>
-        <div className="swapButton" disabled={!tokenOneAmount}>
+        <div
+          className="swapButton"
+          disabled={!tokenOneAmount || !calculatedTokenTwoAmount}
+          onClick={handleSwap}
+        >
           swap
         </div>
       </div>

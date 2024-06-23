@@ -6,25 +6,28 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Spaggheti.sol";
 
-contract LiquidityPool {
+contract spagghetiDex {
     using Math for uint256;
-
+    address[] public tokenList;
     mapping(address => mapping(address => uint256)) public tokenReserves;
 
     uint256 public constant rewardAmount = 1e16;
     mapping(address => uint256) public lastClaimed;
     mapping(address => uint256) public dailyReward;
-
+    
     Spaggheti public spagghetiToken;
     
     constructor(){
-        spagghetiToken = Spaggheti(0x4FA5A5D1710BF5CD9F9A8719172DDD033caA32Fa);
+        require(spagghetiToken.owner() == msg.sender);
+        spagghetiToken = Spaggheti(0xBC7B476f4639B34661489F8C263FE181F4AD33E1);
         spagghetiToken.grantMinterRole(address(this));    
     }
 
-
     function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) public {
         require(amountA > 0 && amountB > 0, "Must send tokens to add liquidity");
+
+        _addTokenIfNotExists(tokenA);
+        _addTokenIfNotExists(tokenB);
         
         IERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
         IERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
@@ -46,12 +49,11 @@ contract LiquidityPool {
         IERC20(tokenB).transfer(msg.sender, amountB);
     }
 
-    function getReserve(address tokenA, address tokenB) public view returns (uint256) {
-        return tokenReserves[tokenA][tokenB];
-    }
-
     function swap(address fromToken, address toToken, uint256 fromAmount) public returns (uint256 toAmount) {
         require(fromAmount > 0, "Amount must be greater than zero");
+
+        _addTokenIfNotExists(fromToken);
+        _addTokenIfNotExists(toToken);
         
         uint256 fromReserve = tokenReserves[fromToken][toToken];
         uint256 toReserve = tokenReserves[toToken][fromToken];
@@ -71,7 +73,7 @@ contract LiquidityPool {
         tokenReserves[fromToken][toToken] += amountAfterFee;
         tokenReserves[toToken][fromToken] -= toAmount;
         
-        IERC20(fromToken).transfer(spagghetiToken.owner(), fee); // Owner zone
+        IERC20(fromToken).transfer(spagghetiToken.owner(), fee); // Owner
         
         return toAmount;
     }
@@ -99,6 +101,24 @@ contract LiquidityPool {
 
         dailyReward[user] += reward;
         spagghetiToken.mintForPool(user, reward);
-        // spagghetiToken.mintForPool(user, reward);
+    }
+
+    function _addTokenIfNotExists(address token) internal {
+        if (!_tokenExists(token)) {
+            tokenList.push(token);
+        }
+    }
+
+    function _tokenExists(address token) internal view returns (bool) {
+        for (uint i = 0; i < tokenList.length; i++) {
+            if (tokenList[i] == token) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getAllTokens() public view returns (address[] memory) {
+        return tokenList;
     }
 }

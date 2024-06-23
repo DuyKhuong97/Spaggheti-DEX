@@ -5,7 +5,6 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./LiquidityPool.sol";
 
 contract Spaggheti is ERC20, Ownable, AccessControl {
     uint256 public constant priceOfToken = 1e17;
@@ -32,16 +31,6 @@ contract Spaggheti is ERC20, Ownable, AccessControl {
         onlyRole(MINTER_ROLE)
     {
         _mint(to, amount);
-    }
-
-
-    // Trade zone
-    function swapInPool(
-        address fromToken,
-        address toToken,
-        uint256 fromAmount
-    ) public {
-        LiquidityPool(owner()).swap(fromToken, toToken, fromAmount);
     }
 
     // Securiry zone
