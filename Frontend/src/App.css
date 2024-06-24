@@ -239,7 +239,7 @@ header {
 
 .modalContent {
   border-top: 1px solid #363e54;
-  padding-top: 20px;
+  /* padding-top: 20px; */
   margin-top: 20px;
   display: flex;
   flex-direction: column;

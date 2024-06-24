@@ -4,43 +4,23 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./LiquidityPool.sol";
 
-contract Spaggheti is ERC20, Ownable, AccessControl {
-    uint256 public constant priceOfToken = 1e17;
-    mapping(address => bytes32) public userHashes;
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+contract Spaggheti is ERC20, Ownable {
+    uint256 public constant priceOfToken = 1e17; // 0.1 ETH per SPD
 
-    constructor(address owner)
+    constructor(address initialOwner)
         ERC20("Spaggheti", "SPD")
-        Ownable(owner)
+        Ownable(initialOwner)
     {
-        _grantRole(MINTER_ROLE, address(this));
+        transferOwnership(initialOwner);
     }
 
-    function mintForOwner(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
 
-    function grantMinterRole(address account) public {
-        _grantRole(MINTER_ROLE, account);
-    }
-    
-    function mintForPool(address to, uint256 amount)
-        public
-        onlyRole(MINTER_ROLE)
-    {
-        _mint(to, amount);
-    }
-
-    // Securiry zone
-
-    function setUserHash(address user) public {
-        bytes32 userHash = keccak256(abi.encodePacked(user));
-        userHashes[user] = userHash;
-    }
-
-    function getUserHash(address user) public view returns (bytes32) {
-        return userHashes[user];
+    function swap(address fromToken, address toToken, uint256 fromAmount) public {
+        LiquidityPool(owner()).swap(fromToken, toToken, fromAmount);
     }
 }
