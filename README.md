@@ -1,1 +1,14 @@
 # Spaggheti-DEX
+
+- Start sever: npm run start
+- Start UI: npm start
+- 
+owner: 0xac81fc2afab3e03d9cdd57bbc3eed37047fd178e
+
+contract token: 0x4FA5A5D1710BF5CD9F9A8719172DDD033caA32Fa
+
+contrtact pool: 0x2B753A953C54B2F7Bd68c5f4764C6745E0294CDF
+
+token A: 0x3C01332993158deE68BE3886EF5B50002795bF42
+
+token B: 0xaeCf92ED261e63a29Dc1D4f6Bd8b422A64E26Bc8

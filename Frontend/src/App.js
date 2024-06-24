@@ -9,6 +9,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { ContextWeb3 } from "./context";
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -23,7 +24,7 @@ function App() {
     const fetchContractABI = async () => {
       try {
         console.log('Fetching contract ABI...');
-        const response = await axios.get('http://localhost:5000/artifacts/Spaggheti.json');
+        const response = await axios.get('http://localhost:5000/artifacts/spagghetiDEX.json');
         console.log('Contract ABI fetched:', response.data.abi);
         setContractABI(response.data.abi);
       } catch (error) {
@@ -40,9 +41,8 @@ function App() {
         try {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
-          console.log('Connecting to contract with ABI:', contractABI);
           const contractInstance = new ethers.Contract(
-            "0xDCc6776B0a3FB62C8EC2494Ec45ac6503b9bA7E4", // contract address
+            "0x54224bCbb82eeb03d651Af074b3e6baFB4af8E9A", // contract address
             contractABI, // ABI fetched from endpoint
             signer
           );
@@ -66,19 +66,21 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <Header connect={connect} isConnected={isConnected} address={address} contract={handleConnect} />
-      <div className="mainWindow">
-        <Routes>
-          <Route
-            path="/"
-            element={<Swap isConnected={isConnected} address={address} contract={handleConnect} />}
-          />
-          <Route path="/Token" element={<Tokens />} />
-          <Route path="/Pool" element={<Pool />} />
-        </Routes>
+    <ContextWeb3.Provider value={{contract, address}}>
+      <div className="App">
+        <Header connect={handleConnect} isConnected={isConnected} address={address} />
+        <div className="mainWindow">
+          <Routes>
+            <Route
+              path="/"
+              element={<Swap isConnected={isConnected} address={address} contract={contract} />}
+            />
+            <Route path="/Token" element={<Tokens isConnected={isConnected} address={address} contract={contract} />} />
+            <Route path="/Pool" element={<Pool isConnected={isConnected} address={address} contract={contract} />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </ContextWeb3.Provider>
   );
 }
 
