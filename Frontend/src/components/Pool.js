@@ -5,7 +5,7 @@ import {
   LeftOutlined, SettingOutlined
 } from "@ant-design/icons";
 
-const provinceData = ['Zhejiang', 'Jiangsu'];
+
 function Pool() {
   const [Slippage, setSlippage] = useState(2.5);
 
