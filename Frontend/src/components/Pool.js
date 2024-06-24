@@ -4,28 +4,11 @@ import { Select, Space, Input, Flex, Popover, Radio } from 'antd';
 import {
   LeftOutlined, SettingOutlined
 } from "@ant-design/icons";
-const cityData = {
-  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
-  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang'],
-};
+
 const provinceData = ['Zhejiang', 'Jiangsu'];
 function Pool() {
   const [Slippage, setSlippage] = useState(2.5);
-  const [tokenOneAmount, setTokenOneAmount] = useState(null);
-  const [tokenTwoAmount, setTokentwoAmount] = useState(null);
-  const [tokenOne, setTokenOne] = useState({ name: "", ticker: "", img: "" });
-  const [tokenTwo, setTokenTwo] = useState({ name: "", ticker: "", img: "" });
-  const [isOpen, setIsOpen] = useState(false);
-  const [changeToken, setChangeToken] = useState(1);
-  const [cities, setCities] = useState(cityData[provinceData[0]]);
-  const [secondCity, setSecondCity] = useState(cityData[provinceData[0]][0]);
-  const handleProvinceChange = (value) => {
-    setCities(cityData[value]);
-    setSecondCity(cityData[value][0]);
-  };
-  const onSecondCityChange = (value) => {
-    setSecondCity(value);
-  };
+
 
   function handleSlippageChange(e) {
     setSlippage(e.target.value);
@@ -66,11 +49,6 @@ function Pool() {
 
         </div>
         <div className="input">
-
-          {/* <Input placeholder="Outlined" style={{}} />
-            <Input placeholder="Filled" variant="filled" />
-            <Input placeholder="Outlined" />
-            <Input placeholder="Filled" variant="filled" /> */}
 
           <div style={{gap:"20px"}}>
             <input name="myInput" style={{
