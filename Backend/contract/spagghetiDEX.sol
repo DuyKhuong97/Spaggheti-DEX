@@ -8,7 +8,13 @@ import "./Spaggheti.sol";
 
 contract spagghetiDex {
     using Math for uint256;
-    address[] public tokenList;
+
+    struct TokenInfo {
+        address tokenAddress;
+        string tokenName;
+    }
+
+    TokenInfo[] public tokenList;
     mapping(address => mapping(address => uint256)) public tokenReserves;
 
     uint256 public constant rewardAmount = 1e16;
@@ -23,11 +29,11 @@ contract spagghetiDex {
         spagghetiToken.grantMinterRole(address(this));    
     }
 
-    function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) public {
+    function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB, string memory nameA, string memory nameB) public {
         require(amountA > 0 && amountB > 0, "Must send tokens to add liquidity");
 
-        _addTokenIfNotExists(tokenA);
-        _addTokenIfNotExists(tokenB);
+        _addTokenIfNotExists(tokenA, nameA);
+        _addTokenIfNotExists(tokenB, nameB);
         
         IERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
         IERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
@@ -52,9 +58,6 @@ contract spagghetiDex {
     function swap(address fromToken, address toToken, uint256 fromAmount) public returns (uint256 toAmount) {
         require(fromAmount > 0, "Amount must be greater than zero");
 
-        _addTokenIfNotExists(fromToken);
-        _addTokenIfNotExists(toToken);
-        
         uint256 fromReserve = tokenReserves[fromToken][toToken];
         uint256 toReserve = tokenReserves[toToken][fromToken];
         
@@ -103,22 +106,25 @@ contract spagghetiDex {
         spagghetiToken.mintForPool(user, reward);
     }
 
-    function _addTokenIfNotExists(address token) internal {
+    function _addTokenIfNotExists(address token, string memory name) internal {
         if (!_tokenExists(token)) {
-            tokenList.push(token);
+            tokenList.push(TokenInfo({
+                tokenAddress: token,
+                tokenName: name
+            }));
         }
     }
 
     function _tokenExists(address token) internal view returns (bool) {
         for (uint i = 0; i < tokenList.length; i++) {
-            if (tokenList[i] == token) {
+            if (tokenList[i].tokenAddress == token) {
                 return true;
             }
         }
         return false;
     }
 
-    function getAllTokens() public view returns (address[] memory) {
+    function getAllTokens() public view returns (TokenInfo[] memory) {
         return tokenList;
     }
 }
