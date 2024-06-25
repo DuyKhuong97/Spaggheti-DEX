@@ -1,6 +1,6 @@
 # Spaggheti-DEX
 
-- Start sever: npm run start
+- Start sever: npm start
 - Start UI: npm start
 - 
 owner: 0xac81fc2afab3e03d9cdd57bbc3eed37047fd178e

@@ -1,87 +1,120 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Spaggheti.sol";
 
 contract spagghetiDex {
     using Math for uint256;
-
+    //Liqui pool
     struct TokenInfo {
         address tokenAddress;
-        string tokenName;
+        string tokenSymbol;
     }
-
     TokenInfo[] public tokenList;
+
     mapping(address => mapping(address => uint256)) public tokenReserves;
 
+    //Reward User
     uint256 public constant rewardAmount = 1e16;
     mapping(address => uint256) public lastClaimed;
     mapping(address => uint256) public dailyReward;
-    
+    //DEX security
+    mapping(address => bytes32) public userHashes;
+
     Spaggheti public spagghetiToken;
-    
-    constructor(){
-        require(spagghetiToken.owner() == msg.sender);
+
+    constructor() {
+        // require(spagghetiToken.owner() == msg.sender);
         spagghetiToken = Spaggheti(0xBC7B476f4639B34661489F8C263FE181F4AD33E1);
-        spagghetiToken.grantMinterRole(address(this));    
+        spagghetiToken.grantMinterRole(address(this));
     }
 
-    function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB, string memory nameA, string memory nameB) public {
-        require(amountA > 0 && amountB > 0, "Must send tokens to add liquidity");
+    function addLiquidity(
+        address tokenA,
+        address tokenB,
+        uint256 amountA,
+        uint256 amountB
+    ) public {
+        require(
+            amountA > 0 && amountB > 0,
+            "Must send tokens to add liquidity"
+        );
 
-        _addTokenIfNotExists(tokenA, nameA);
-        _addTokenIfNotExists(tokenB, nameB);
-        
-        IERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
-        IERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
-        
+        _addTokenIfNotExists(tokenA);
+        _addTokenIfNotExists(tokenB);
+
+        ERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
+        ERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
+
         tokenReserves[tokenA][tokenB] += amountA;
         tokenReserves[tokenB][tokenA] += amountB;
 
         _rewardUser(msg.sender);
     }
 
-    function removeLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) public {
-        require(tokenReserves[tokenA][tokenB] >= amountA, "Not enough liquidity for tokenA");
-        require(tokenReserves[tokenB][tokenA] >= amountB, "Not enough liquidity for tokenB");
-        
+    function removeLiquidity(
+        address tokenA,
+        address tokenB,
+        uint256 amountA,
+        uint256 amountB
+    ) public {
+        require(
+            tokenReserves[tokenA][tokenB] >= amountA,
+            "Not enough liquidity for tokenA"
+        );
+        require(
+            tokenReserves[tokenB][tokenA] >= amountB,
+            "Not enough liquidity for tokenB"
+        );
+
         tokenReserves[tokenA][tokenB] -= amountA;
         tokenReserves[tokenB][tokenA] -= amountB;
-        
-        IERC20(tokenA).transfer(msg.sender, amountA);
-        IERC20(tokenB).transfer(msg.sender, amountB);
+
+        ERC20(tokenA).transfer(msg.sender, amountA);
+        ERC20(tokenB).transfer(msg.sender, amountB);
     }
 
-    function swap(address fromToken, address toToken, uint256 fromAmount) public returns (uint256 toAmount) {
+    function swap(
+        address fromToken,
+        address toToken,
+        uint256 fromAmount
+    ) public returns (uint256 toAmount) {
         require(fromAmount > 0, "Amount must be greater than zero");
 
         uint256 fromReserve = tokenReserves[fromToken][toToken];
         uint256 toReserve = tokenReserves[toToken][fromToken];
-        
+
         require(fromReserve > 0 && toReserve > 0, "Invalid reserves");
 
         uint256 fee = (fromAmount * 1) / 1000; // fee for swap
         uint256 amountAfterFee = fromAmount - fee;
-        
-        toAmount = getAmountOfTokens(amountAfterFee, fromReserve, toReserve);
-        
-        require(IERC20(toToken).balanceOf(address(this)) >= toAmount, "Not enough liquidity in pool");
 
-        IERC20(fromToken).transferFrom(msg.sender, address(this), fromAmount);
-        IERC20(toToken).transfer(msg.sender, toAmount);
-        
+        toAmount = getAmountOfTokens(amountAfterFee, fromReserve, toReserve);
+
+        require(
+            ERC20(toToken).balanceOf(address(this)) >= toAmount,
+            "Not enough liquidity in pool"
+        );
+
+        ERC20(fromToken).transferFrom(msg.sender, address(this), fromAmount);
+        ERC20(toToken).transfer(msg.sender, toAmount);
+
         tokenReserves[fromToken][toToken] += amountAfterFee;
         tokenReserves[toToken][fromToken] -= toAmount;
-        
-        IERC20(fromToken).transfer(spagghetiToken.owner(), fee); // Owner
-        
+
+        ERC20(fromToken).transfer(spagghetiToken.owner(), fee); // Owner
+
         return toAmount;
     }
 
-    function getAmountOfTokens(uint256 inputAmount, uint256 inputReserve, uint256 outputReserve) public pure returns (uint256) {
+    function getAmountOfTokens(
+        uint256 inputAmount,
+        uint256 inputReserve,
+        uint256 outputReserve
+    ) public pure returns (uint256) {
         require(inputReserve > 0 && outputReserve > 0, "Invalid reserves");
         uint256 inputAmountWithFee = inputAmount;
         uint256 numerator = inputAmountWithFee * outputReserve;
@@ -90,7 +123,7 @@ contract spagghetiDex {
     }
 
     function _rewardUser(address user) internal {
-        uint256 currentDay = block.timestamp / (24*60*60);
+        uint256 currentDay = block.timestamp / (24 * 60 * 60);
         if (lastClaimed[user] < currentDay) {
             dailyReward[user] = 0;
             lastClaimed[user] = currentDay;
@@ -106,13 +139,20 @@ contract spagghetiDex {
         spagghetiToken.mintForPool(user, reward);
     }
 
-    function _addTokenIfNotExists(address token, string memory name) internal {
+    function _addTokenIfNotExists(address token) internal {
         if (!_tokenExists(token)) {
-            tokenList.push(TokenInfo({
-                tokenAddress: token,
-                tokenName: name
-            }));
+            string memory tokenSymbol = _getTokenSymbol(token);
+            tokenList.push(
+                TokenInfo({tokenAddress: token, tokenSymbol: tokenSymbol})
+            );
         }
+    }
+
+    function _getTokenSymbol(
+        address token
+    ) internal view returns (string memory) {
+        ERC20 tokenContract = ERC20(token);
+        return tokenContract.symbol();
     }
 
     function _tokenExists(address token) internal view returns (bool) {
@@ -126,5 +166,16 @@ contract spagghetiDex {
 
     function getAllTokens() public view returns (TokenInfo[] memory) {
         return tokenList;
+    }
+
+    // Securiry zone
+
+    function setUserHash(address user) public {
+        bytes32 userHash = keccak256(abi.encodePacked(user));
+        userHashes[user] = userHash;
+    }
+
+    function getUserHash(address user) public view returns (bytes32) {
+        return userHashes[user];
     }
 }

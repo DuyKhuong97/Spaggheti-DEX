@@ -5,10 +5,10 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./spagghetiDex.sol";
 
 contract Spaggheti is ERC20, Ownable, AccessControl {
     uint256 public constant priceOfToken = 1e17;
-    mapping(address => bytes32) public userHashes;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     constructor(address owner)
@@ -33,14 +33,4 @@ contract Spaggheti is ERC20, Ownable, AccessControl {
         _mint(to, amount);
     }
 
-    // Securiry zone
-
-    function setUserHash(address user) public {
-        bytes32 userHash = keccak256(abi.encodePacked(user));
-        userHashes[user] = userHash;
-    }
-
-    function getUserHash(address user) public view returns (bytes32) {
-        return userHashes[user];
-    }
 }

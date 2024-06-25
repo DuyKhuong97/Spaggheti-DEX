@@ -2,6 +2,7 @@ import React from 'react'
 import Logo from "../logo/spaghetti-svgrepo-com.svg";
 import Eth from "../logo/eth.svg";
 import { Link } from 'react-router-dom';
+
 function Header(props) {
   const {address, isConnected, connect} = props;
   return (
@@ -26,7 +27,7 @@ function Header(props) {
           ethereum
         </div>
         <div className='connectButton' onClick={connect}>
-          {isConnected ? (address.slice(0,4) + "..." + address.slice(38)) : "Connect"}
+          {isConnected ? (address.slice(0,4) + "..." + address.slice(38)) : "Connect Wallet"}
         </div>
       </div>
     </header>

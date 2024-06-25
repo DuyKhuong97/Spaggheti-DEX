@@ -102,7 +102,7 @@ function Pool() {
               marginbottom: "5px",
               fontsize: "15px",
               borderradius: "12px",
-              marginBottom:"10px",}}>Add successful</button>
+              marginBottom:"10px",}}>Add liquidity Pair</button>
 
           </div>
 

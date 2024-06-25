@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Input, Popover, Modal, message } from "antd";
-import {
-  AccountBookOutlined,
-  DownOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { Input, Modal, message } from "antd";
+import { AccountBookOutlined, DownOutlined } from "@ant-design/icons";
 
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
 
 function Swap({ isConnected, address }) {
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
-  const [calculatedTokenTwoAmount, setCalculatedTokenTwoAmount] = useState(null);
-  const [tokenOne, setTokenOne] = useState({ address: "", ticker: "" });
-  const [tokenTwo, setTokenTwo] = useState({ address: "", ticker: "" });
+  const [calculatedTokenTwoAmount, setCalculatedTokenTwoAmount] =
+    useState(null);
+  const [tokenOne, setTokenOne] = useState({ address: "", ticker: "Token 1" });
+  const [tokenTwo, setTokenTwo] = useState({ address: "", ticker: "Token 2" });
   const [isOpen, setIsOpen] = useState(false);
   const [changeToken, setChangeToken] = useState(1);
   const [poolTokens, setPoolTokens] = useState([]);
@@ -26,10 +23,14 @@ function Swap({ isConnected, address }) {
         try {
           const tokens = await contract.getAllTokens();
           console.log("Tokens in pool:", tokens);
-          setPoolTokens(tokens);
-          if (tokens.length > 0) {
-            setTokenOne({ address: tokens[0], ticker: "Token 1" });
-            setTokenTwo({ address: tokens[0], ticker: "Token 2" });
+          const formattedTokens = tokens.map((token) => ({
+            address: token.tokenAddress,
+            symbol: token.tokenSymbol,
+          }));
+          setPoolTokens(formattedTokens);
+          if (formattedTokens.length >= 2) {
+            setTokenOne(formattedTokens[0]);
+            setTokenTwo(formattedTokens[1]);
           }
         } catch (error) {
           console.error("Error fetching pool tokens:", error);
@@ -46,12 +47,21 @@ function Swap({ isConnected, address }) {
     setTokenOneAmount(amount);
     if (amount) {
       try {
+        console.log(`Input Amount: ${amount}`);
+        const inputAmount = ethers.utils.parseEther(amount.toString());
+        console.log(`Parsed Input Amount (in Wei): ${inputAmount}`);
+
         const calculatedAmount = await contract.getAmountOfTokens(
           tokenOne.address,
           tokenTwo.address,
-          ethers.utils.parseEther(amount.toString())
+          inputAmount
         );
-        setCalculatedTokenTwoAmount(calculatedAmount.toString());
+
+        console.log(`Calculated Amount (in Wei): ${calculatedAmount}`);
+
+        const formattedAmount = ethers.utils.formatEther(calculatedAmount);
+        console.log(`Formatted Calculated Amount: ${formattedAmount}`);
+        setCalculatedTokenTwoAmount(formattedAmount);
       } catch (error) {
         console.error("Error calculating token amount:", error);
       }
@@ -62,21 +72,30 @@ function Swap({ isConnected, address }) {
 
   function switchToken() {
     const one = tokenOne;
+    const amountOne = tokenOneAmount;
     const two = tokenTwo;
+    const amountTwo = calculatedTokenTwoAmount;
+
     setTokenOne(two);
     setTokenTwo(one);
+    setTokenOneAmount(amountTwo);
+    setCalculatedTokenTwoAmount(amountOne);
   }
 
-  function openModal(asset) {
-    setChangeToken(asset);
+  function openModal(tokenselected) {
+    setChangeToken(tokenselected);
     setIsOpen(true);
   }
 
   function modifyToken(token) {
     if (changeToken === 1) {
-      setTokenOne({ address: token, ticker: "Token 1" });
+      setTokenOne({ address: token.address, symbol: token.symbol });
+      const pairedToken = poolTokens.find((t) => t.address !== token.address);
+      setTokenTwo(pairedToken);
     } else {
-      setTokenTwo({ address: token, ticker: "Token 2" });
+      setTokenTwo({ address: token.address, symbol: token.symbol });
+      const pairedToken = poolTokens.find((t) => t.address !== token.address);
+      setTokenOne(pairedToken);
     }
     setIsOpen(false);
   }
@@ -111,8 +130,10 @@ function Swap({ isConnected, address }) {
               key={index}
               onClick={() => modifyToken(token)}
             >
-              <div className="tokenName">{`Token ${index + 1}`}</div>
-              <div className="tokenTicker">{token}</div>
+              <div className="token">
+                Token : {token.symbol} (
+                {token.address.slice(0, 6) + "..." + token.address.slice(37)})
+              </div>
             </div>
           ))}
         </div>
@@ -120,14 +141,6 @@ function Swap({ isConnected, address }) {
       <div className="tradeBox">
         <div className="tradeBoxHeader">
           <h4>swap</h4>
-          <Popover
-            content={<div>Slippage Tolerance</div>}
-            title="Setting"
-            trigger="click"
-            placement="bottomRight"
-          >
-            <SettingOutlined className="cog" />
-          </Popover>
         </div>
         <div className="inputs">
           <Input
@@ -143,12 +156,12 @@ function Swap({ isConnected, address }) {
           <div className="switchButton" onClick={switchToken}>
             <AccountBookOutlined className="switchArrow" />
           </div>
-          <div className="assetOne" onClick={() => openModal(1)}>
-            {tokenOne.ticker}
+          <div className="tokenselectedOne" onClick={() => openModal(1)}>
+            {tokenOne.symbol}
             <DownOutlined />
           </div>
-          <div className="assetTwo" onClick={() => openModal(2)}>
-            {tokenTwo.ticker}
+          <div className="tokenselectedTwo" onClick={() => openModal(2)}>
+            {tokenTwo.symbol}
             <DownOutlined />
           </div>
         </div>
