@@ -20,6 +20,7 @@ function App() {
   const [contractABI, setContractABI] = useState(null);
   const [contract, setContract] = useState(null);
 
+
   useEffect(() => {
     const fetchContractABI = async () => {
       try {
@@ -44,7 +45,7 @@ function App() {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
           const contractInstance = new ethers.Contract(
-            "0x4693f53e8B5085A1D29D14148Edd59D591e578e4", // contract address
+            "0xFAc4fBb039d90A38FB8314B757A9fb4A3182781B", // contract address
             contractABI, // ABI fetched from endpoint
             signer
           );

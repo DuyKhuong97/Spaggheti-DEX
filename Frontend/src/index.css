@@ -48,27 +48,6 @@ code {
   color: white !important;
 }
 
-.ant-popover-inner-content {
-  color: white !important;
-}
-
-.ant-popover-inner {
-  min-width: 260px !important;
-  min-height: 140px !important;
-  border: 1px solid #21273a;
-  background-color: #0e111b !important;
-}
-
-.ant-radio-group {
-  margin-top: 10px;
-}
-
-.ant-radio-button-wrapper {
-  background-color: #1f2639 !important;
-  color: white !important;
-  font-weight: 500;
-  border-color: white !important;
-}
 
 .ant-radio-button-wrapper-checked {
   border-color: white !important;
@@ -109,4 +88,13 @@ code {
 
 .ant-modal-close-icon:hover {
   color: white !important;
+}
+
+.ant-btn {
+  background-color: #303f68 !important;
+  color: rgb(255, 255, 255) !important;
+  border-width: 0px !important;
+  height: 50px !important;
+  font-size: 20px;
+  border-radius: 12px !important;
 }

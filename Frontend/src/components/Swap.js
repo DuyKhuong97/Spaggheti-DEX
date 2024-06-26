@@ -46,29 +46,36 @@ function Swap({ isConnected, address }) {
     const amount = e.target.value;
     setTokenOneAmount(amount);
     if (amount) {
-      try {
-        console.log(`Input Amount: ${amount}`);
-        const inputAmount = ethers.utils.parseEther(amount.toString());
-        console.log(`Parsed Input Amount (in Wei): ${inputAmount}`);
+        try {
+            console.log(`Input Amount: ${amount}`);
+            const inputAmount = ethers.utils.parseEther(amount.toString());
+            console.log(`Parsed Input Amount (in Wei): ${inputAmount.toString()}`);
 
-        const calculatedAmount = await contract.getAmountOfTokens(
-          tokenOne.address,
-          tokenTwo.address,
-          inputAmount
-        );
+            const inputReserve = await contract.tokenReserves(tokenOne.address, tokenTwo.address);
+            const outputReserve = await contract.tokenReserves(tokenTwo.address, tokenOne.address);
 
-        console.log(`Calculated Amount (in Wei): ${calculatedAmount}`);
+            const calculatedAmount = await contract.getAmountOfTokens(
+                inputAmount,
+                inputReserve,
+                outputReserve
+            );
 
-        const formattedAmount = ethers.utils.formatEther(calculatedAmount);
-        console.log(`Formatted Calculated Amount: ${formattedAmount}`);
-        setCalculatedTokenTwoAmount(formattedAmount);
-      } catch (error) {
-        console.error("Error calculating token amount:", error);
-      }
+            console.log(`Calculated Amount (in Wei) from contract: ${calculatedAmount.toString()}`);
+
+            const formattedAmount = ethers.utils.formatEther(calculatedAmount); 
+            console.log(`Formatted Calculated Amount (in Ether): ${formattedAmount}`);
+
+            const truncatedAmount = parseFloat(formattedAmount).toFixed(3);
+
+            setCalculatedTokenTwoAmount(truncatedAmount);
+            
+        } catch (error) {
+            console.error("Error calculating token amount:", error);
+        }
     } else {
-      setCalculatedTokenTwoAmount(null);
+        setCalculatedTokenTwoAmount(null);
     }
-  }
+}
 
   function switchToken() {
     const one = tokenOne;

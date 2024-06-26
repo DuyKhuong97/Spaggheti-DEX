@@ -1,116 +1,96 @@
-import React, { useState } from 'react';
-import { Select, Space, Input, Flex, Popover, Radio } from 'antd';
-
-import {
-  LeftOutlined, SettingOutlined
-} from "@ant-design/icons";
-
+import React, { useState, useContext } from "react";
+import { LeftOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+import "../App.css";
+import { ContextWeb3 } from "../context";
+import { ethers } from "ethers";
 
 function Pool() {
-  const [Slippage, setSlippage] = useState(2.5);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tokenA, setTokenA] = useState("");
+  const [tokenB, setTokenB] = useState("");
+  const [amountA, setAmountA] = useState(0);
+  const [amountB, setAmountB] = useState(0);
 
+  const { contract } = useContext(ContextWeb3);
 
-  function handleSlippageChange(e) {
-    setSlippage(e.target.value);
-  }
+  const handleButtonClick = async () => {
+    setIsLoading(true);
+    try {
+      const signer = new ethers.providers.Web3Provider(window.ethereum).getSigner();
+      const contractWithSigner = contract.connect(signer);
 
-  const settings = (
-    <>
-      <div>Slippage Tolerance</div>
-      <div>
-        <Radio.Group value={Slippage} onChange={handleSlippageChange}>
-          <Radio.Button value={0.5}>0.5%</Radio.Button>
-          <Radio.Button value={2.5}>2.5%</Radio.Button>
-          <Radio.Button value={5}>5.0%</Radio.Button>
-        </Radio.Group>
-      </div>
-    </>
-  );
+      const amountAConver = ethers.utils.parseEther(amountA.toString());
+      const amountBConver = ethers.utils.parseEther(amountB.toString());
+      await contractWithSigner.addLiquidity(tokenA, tokenB, amountAConver, amountBConver);
+      console.log("Liquidity added successfully!");
+
+    } catch (error) {
+      console.error("Error adding liquidity:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleIconClick = () => {
+    window.location.href = "/Token";
+  };
+
   return (
-    <div className="tradeBox">
-      <Space wrap>
-        <div style={{ display: "flex", width: "400px", position: "relative" }}>
-          <LeftOutlined style={{}} />
-          <h4 style={{ justifyContent: "center", textAlign: "center", paddingLeft: "140px", paddingRight: "130px" }}>Add liquidity</h4>
-          <Popover
-            content={settings}
-            title="setting"
-            trigger="click"
-            placement="bottomRight"
-            style={{ paddingLeft: "40px" }}
-          >
-            <SettingOutlined className="cog" />
-          </Popover>
+    <div className="tradeBox" style={{ height: "450px" }}>
+      <div style={{ display: "flex" }}>
+        <LeftOutlined
+          className="highlight-icon"
+          style={{ cursor: "pointer" }}
+          onClick={handleIconClick}
+        />
+        <h4
+          style={{
+            justifyContent: "center",
+            textAlign: "center",
+            paddingLeft: "140px",
+            paddingRight: "130px",
+          }}
+        >
+          Add liquidity
+        </h4>
+      </div>
+      <div className="Token">
+        <div className="tokenInfor">
+          <input
+            className="inputAddress"
+            placeholder="Token A address"
+            value={tokenA}
+            onChange={(e) => setTokenA(e.target.value)}
+          ></input>
+          <input
+            className="inputAmount"
+            placeholder="Amount A"
+            type="number"
+            value={amountA}
+            onChange={(e) => setAmountA(e.target.value)}></input>
         </div>
-        <div className="tradeBoxHeader">
-
-
-
-
+        <div className="tokenInfor">
+          <input
+            className="inputAddress"
+            placeholder="Token B address"
+            value={tokenB}
+            onChange={(e) => setTokenB(e.target.value)}></input>
+          <input
+            className="inputAmount"
+            placeholder="Amount B"
+            type="number"
+            value={amountB}
+            onChange={(e) => setAmountB(e.target.value)}></input>
         </div>
-        <div className="input">
-
-          <div style={{gap:"20px"}}>
-            <input name="myInput" style={{
-              backgroundColor: "#1f2639", color: "white",
-              borderwidth: "0px",
-              height: "60px" ,
-              width:"400px",
-              marginbottom: "5px",
-              fontsize: "15px",
-              borderradius: "12px",
-              marginBottom:"10px" }} placeholder='inputhere'  />
-            <input name="myInput" style={{
-              backgroundColor: "#1f2639", color: "white",
-              borderwidth: "0px",
-              height: "60px" ,
-              width:"400px",
-              marginbottom: "5px",
-              fontsize: "15px",
-              borderradius: "12px",
-              marginBottom:"10px"  }} placeholder='inputhere'  />
-            <input name="myInput" style={{
-              backgroundColor: "#1f2639", color: "white",
-              borderwidth: "0px",
-              height: "60px" ,
-              width:"400px",
-              marginbottom: "5px",
-              fontsize: "15px",
-              borderradius: "12px",
-              marginBottom:"10px" }} placeholder='inputhere'  />
-
-            <input name="myInput" style={{
-              backgroundColor: "#1f2639", color: "white",
-              borderwidth: "0px",
-              height: "60px" ,
-              width:"400px",
-              marginbottom: "5px",
-              fontsize: "15px",
-              borderradius: "12px",
-              marginBottom:"10px" }} placeholder='inputhere' />
-          </div>
-          <div style={{
-            backgroundcolor: "#243056",
-            opacity: "0.4",
-            color: "#5982f39b",
-            
-          }}> 
-            <button style={{backgroundColor: "#1f2639", color: "white",
-              borderwidth: "0px",
-              height: "60px" ,
-              width:"400px",
-              marginbottom: "5px",
-              fontsize: "15px",
-              borderradius: "12px",
-              marginBottom:"10px",}}>Add liquidity Pair</button>
-
-          </div>
-
-        </div>
-
-      </Space>
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        <Button type="primary" loading={isLoading} onClick={handleButtonClick}>
+          {isLoading ? "Adding Liquidity" : "Add Liquidity"}
+        </Button>
+      </div>
     </div>
-
   );
-};
+}
+
 export default Pool;
