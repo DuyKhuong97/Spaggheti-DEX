@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Table } from 'antd';
-import "../App.css";
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
+import { LeftOutlined } from "@ant-design/icons";
+import "../App.css";
 
 function Token() {
   const { contract } = useContext(ContextWeb3);
@@ -14,10 +15,7 @@ function Token() {
         try {
           const tokenList = await contract.getAllTokens();
           const tokenData = await Promise.all(tokenList.map(async (token, index) => {
-            const tokenContract = new ethers.Contract(token.tokenAddress, [
-              "function symbol() view returns (string)",
-              "function balanceOf(address) view returns (uint256)"
-            ], contract.signer);
+            const tokenContract = new ethers.Contract(token.tokenAddress, contract.signer);
             
             const symbol = await tokenContract.symbol();
             const reserve = await tokenContract.balanceOf(contract.address);
@@ -55,10 +53,29 @@ function Token() {
       key: 'reserve',
     },
   ];
-
+  const handleIconClick = () => {
+    window.location.href = "/";
+  };
   return (
     <div className="tradeBox">
-      <h1>Token list</h1>
+      
+      <div style={{ display: "flex" }}>
+        <LeftOutlined
+          className="highlight-icon"
+          style={{ cursor: "pointer" }}
+          onClick={handleIconClick}
+        />
+        <h4
+          style={{
+            justifyContent: "center",
+            textAlign: "center",
+            paddingLeft: "140px",
+            paddingRight: "130px",
+          }}
+        >
+          Token List
+        </h4>
+      </div>
       <Table columns={columns} dataSource={tokens} className='customTable' />
     </div>
   );
