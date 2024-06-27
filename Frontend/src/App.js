@@ -13,7 +13,7 @@ import { ContextWeb3 } from "./context";
 
 function App() {
   const { address, isConnected } = useAccount();
-  const { connectWallet } = useConnect({
+  const { connect } = useConnect({
     connector: new MetaMaskConnector(),
   });
 
@@ -65,11 +65,13 @@ function App() {
 
   const handleConnectWallet = async () => {
     try {
-      await connectWallet();
+      await connect();
     } catch (error) {
       console.error("Error connecting to MetaMask:", error);
     }
   };
+  console.log("Address:", address);
+  console.log("Is connected:", isConnected);
 
   return (
     <ContextWeb3.Provider value={{ contract, address }}>

@@ -98,3 +98,7 @@ code {
   font-size: 20px;
   border-radius: 12px !important;
 }
+
+.ant-table{
+  background-color: red !important;
+}

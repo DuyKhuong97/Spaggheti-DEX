@@ -64,6 +64,7 @@ function Pool() {
             onChange={(e) => setTokenA(e.target.value)}
           ></input>
           <input
+          
             className="inputAmount"
             placeholder="Amount A"
             type="number"

@@ -308,3 +308,33 @@ header {
   color: #1890ff; 
   transform: scale(2); 
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+.customTable{
+  width: 450px;
+}
+
+.customTable .ant-table-tbody > tr:nth-child(4n+1),
+.customTable .ant-table-tbody > tr:nth-child(4n+2) {
+  background-color: #ffffff;
+}
+
+.customTable .ant-table-tbody > tr:nth-child(4n+3),
+.customTable .ant-table-tbody > tr:nth-child(4n+4) {
+  background-color: #fafafa;
+}
+
+.customTable .ant-table-tbody > tr > td {
+  border-bottom: none;
+}
+
+.customTable .ant-table-tbody > tr:nth-child(2n) > td {
+  border-bottom: 5px solid #2c09f3;
+}
