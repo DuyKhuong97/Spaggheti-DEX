@@ -5,6 +5,8 @@ import { ethers } from "ethers";
 import { LeftOutlined } from "@ant-design/icons";
 import "../App.css";
 
+
+
 function Token() {
   const { contract } = useContext(ContextWeb3);
   const [tokens, setTokens] = useState([]);
@@ -14,9 +16,13 @@ function Token() {
       if (contract) {
         try {
           const tokenList = await contract.getAllTokens();
+          console.log(tokenList);
           const tokenData = await Promise.all(tokenList.map(async (token, index) => {
-            const tokenContract = new ethers.Contract(token.tokenAddress, contract.signer);
-            
+            const tokenContract = new ethers.Contract(token.tokenAddress, [
+              "function symbol() view returns (string)",
+              "function balanceOf(address) view returns (uint256)"
+            ], contract.provider);
+            console.log(tokenContract);
             const symbol = await tokenContract.symbol();
             const reserve = await tokenContract.balanceOf(contract.address);
             
@@ -27,6 +33,7 @@ function Token() {
             };
           }));
           setTokens(tokenData);
+          console.log(tokenData);
         } catch (error) {
           console.error("Error fetching tokens:", error);
         }
