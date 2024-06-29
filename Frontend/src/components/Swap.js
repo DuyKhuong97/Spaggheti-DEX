@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Input, Modal, message } from "antd";
 import { AccountBookOutlined, DownOutlined } from "@ant-design/icons";
-
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
 
 function Swap({ isConnected, address }) {
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
@@ -14,7 +14,7 @@ function Swap({ isConnected, address }) {
   const [isOpen, setIsOpen] = useState(false);
   const [changeToken, setChangeToken] = useState(1);
   const [poolTokens, setPoolTokens] = useState([]);
-
+  const navigate = useNavigate();
   const { contract } = useContext(ContextWeb3);
 
   useEffect(() => {
@@ -34,7 +34,6 @@ function Swap({ isConnected, address }) {
           }
         } catch (error) {
           console.error("Error fetching pool tokens:", error);
-          message.error("Failed to fetch tokens from pool");
         }
       }
     };
@@ -46,37 +45,52 @@ function Swap({ isConnected, address }) {
     const amount = e.target.value;
     setTokenOneAmount(amount);
     if (amount) {
-        try {
-            console.log(`Input Amount: ${amount}`);
-            const inputAmount = ethers.utils.parseEther(amount.toString());
-            console.log(`Parsed Input Amount (in Wei): ${inputAmount.toString()}`);
+      try {
+        console.log(`Input Amount: ${amount}`);
+        const inputAmount = ethers.utils.parseEther(amount.toString());
+        console.log(`Parsed Input Amount (in Wei): ${inputAmount.toString()}`);
 
-            const inputReserve = await contract.tokenReserves(tokenOne.address, tokenTwo.address);
-            const outputReserve = await contract.tokenReserves(tokenTwo.address, tokenOne.address);
+        const inputReserve = await contract.tokenReserves(tokenOne.address, tokenTwo.address);
+        const outputReserve = await contract.tokenReserves(tokenTwo.address, tokenOne.address);
 
-            const calculatedAmount = await contract.getAmountOfTokens(
-                inputAmount,
-                inputReserve,
-                outputReserve
-            );
+        const calculatedAmount = await contract.getAmountOfTokens(
+          inputAmount,
+          inputReserve,
+          outputReserve
+        );
 
-            console.log(`Calculated Amount (in Wei) from contract: ${calculatedAmount.toString()}`);
+        console.log(`Calculated Amount (in Wei) from contract: ${calculatedAmount.toString()}`);
 
-            const formattedAmount = ethers.utils.formatEther(calculatedAmount); 
-            console.log(`Formatted Calculated Amount (in Ether): ${formattedAmount}`);
+        const formattedAmount = ethers.utils.formatEther(calculatedAmount);
+        console.log(`Formatted Calculated Amount (in Ether): ${formattedAmount}`);
 
-            const truncatedAmount = parseFloat(formattedAmount).toFixed(3);
+        const truncatedAmount = parseFloat(formattedAmount).toFixed(3);
 
-            setCalculatedTokenTwoAmount(truncatedAmount);
-            
-        } catch (error) {
-            console.error("Error calculating token amount:", error);
-        }
+        setCalculatedTokenTwoAmount(truncatedAmount);
+
+      } catch (error) {
+        console.error("Error calculating token amount:", error);
+        message.error({
+          content: (
+            <span>
+              Token must be swap by pair, check at{' '}
+              <a onClick={(handleIconClick)}>Token list</a>
+            </span>
+          ),
+          duration: 5,
+          style: {
+            marginTop: 150, 
+            fontSize: 20,
+          },
+        });
+      }
     } else {
-        setCalculatedTokenTwoAmount(null);
+      setCalculatedTokenTwoAmount(null);
     }
-}
-
+  }
+  const handleIconClick = () => {
+    navigate("/Token");
+  };
   function switchToken() {
     const one = tokenOne;
     const amountOne = tokenOneAmount;
@@ -96,13 +110,13 @@ function Swap({ isConnected, address }) {
 
   function modifyToken(token) {
     if (changeToken === 1) {
-      setTokenOne({ address: token.address, symbol: token.symbol });
-      const pairedToken = poolTokens.find((t) => t.address !== token.address);
-      setTokenTwo(pairedToken);
+      if (token.address!== tokenTwo.address) {
+        setTokenOne({ address: token.address, symbol: token.symbol });
+      }
     } else {
-      setTokenTwo({ address: token.address, symbol: token.symbol });
-      const pairedToken = poolTokens.find((t) => t.address !== token.address);
-      setTokenOne(pairedToken);
+      if (token.address!== tokenOne.address) {
+        setTokenTwo({ address: token.address, symbol: token.symbol });
+      }
     }
     setIsOpen(false);
   }

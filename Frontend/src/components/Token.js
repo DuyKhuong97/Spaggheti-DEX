@@ -4,12 +4,14 @@ import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
 import { LeftOutlined } from "@ant-design/icons";
 import "../App.css";
+import { useNavigate } from "react-router-dom";
 
 
 
 function Token() {
   const { contract } = useContext(ContextWeb3);
   const [tokens, setTokens] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -28,7 +30,7 @@ function Token() {
             
             return {
               symbol: symbol,
-              address: token.tokenAddress.slice(0, 6) + "..." + token.tokenAddress.slice(30),
+              address: token.tokenAddress.slice(0, 6) + "..." + token.tokenAddress.slice(35),
               reserve: parseFloat(ethers.utils.formatUnits(reserve, 18)).toFixed(3)
             };
           }));
@@ -45,7 +47,7 @@ function Token() {
 
   const columns = [
     {
-      title: 'Symbol',
+      title: 'Token',
       dataIndex: 'symbol',
       key: 'symbol',
     },
@@ -60,8 +62,8 @@ function Token() {
       key: 'reserve',
     },
   ];
-  const handleIconClick = () => {
-    window.location.href = "/";
+const handleIconClick = () => {
+    navigate("/");
   };
   return (
     <div className="tradeBox">

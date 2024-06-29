@@ -336,5 +336,19 @@ input::-webkit-inner-spin-button {
 }
 
 .customTable .ant-table-tbody > tr:nth-child(2n) > td {
-  border-bottom: 5px solid #2c09f3;
+  border-bottom: 5px solid   #82a0f186;
+}
+
+.tokenSymbol{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1f2639;
+  color: white;
+  border-width: 0px;
+  height: 50px;
+  width: 40%;
+  margin-bottom: 10px;
+  font-size: 20px;
+  border-radius: 12px;
 }

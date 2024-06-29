@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
 import { LeftOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import "../App.css";
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
 
 function Pool() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +12,12 @@ function Pool() {
   const [tokenB, setTokenB] = useState("");
   const [amountA, setAmountA] = useState(0);
   const [amountB, setAmountB] = useState(0);
+  const [tokenASymbol, setTokenASymbol] = useState("");
+  const [tokenASymbolLoading, setTokenASymbolLoading] = useState(false);
+  const [tokenBSymbol, setTokenBSymbol] = useState("");
+  const [tokenBSymbolLoading, setTokenBSymbolLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const { contract } = useContext(ContextWeb3);
 
@@ -33,7 +40,27 @@ function Pool() {
   };
 
   const handleIconClick = () => {
-    window.location.href = "/Token";
+    navigate("/Token");
+  };
+
+  const handleTokenAChange = async (e) => {
+    setTokenA(e.target.value);
+    setTokenASymbolLoading(true);
+    setTimeout(async () => {
+      const tokenSymbol = await contract._getTokenSymbol(e.target.value);
+      setTokenASymbol(tokenSymbol);
+      setTokenASymbolLoading(false);
+    }, 3000);
+  };
+
+  const handleTokenBChange = async (e) => {
+    setTokenB(e.target.value);
+    setTokenBSymbolLoading(true);
+    setTimeout(async () => {
+      const tokenSymbol = await contract._getTokenSymbol(e.target.value);
+      setTokenBSymbol(tokenSymbol);
+      setTokenBSymbolLoading(false);
+    }, 3000);
   };
 
   return (
@@ -61,28 +88,45 @@ function Pool() {
             className="inputAddress"
             placeholder="Token A address"
             value={tokenA}
-            onChange={(e) => setTokenA(e.target.value)}
+            onChange={handleTokenAChange}
           ></input>
-          <input
-          
-            className="inputAmount"
-            placeholder="Amount A"
-            type="number"
-            value={amountA}
-            onChange={(e) => setAmountA(e.target.value)}></input>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <input
+              className="inputAmount"
+              placeholder="Amount A"
+              type="number"
+              value={amountA}
+              onChange={(e) => setAmountA(e.target.value)}></input>
+            <div className="tokenSymbol">
+              {tokenASymbolLoading ? (
+                <Spin size="small" />
+              ) : (
+                tokenASymbol
+              )}
+            </div>
+          </div>
         </div>
         <div className="tokenInfor">
           <input
             className="inputAddress"
             placeholder="Token B address"
             value={tokenB}
-            onChange={(e) => setTokenB(e.target.value)}></input>
-          <input
-            className="inputAmount"
-            placeholder="Amount B"
-            type="number"
-            value={amountB}
-            onChange={(e) => setAmountB(e.target.value)}></input>
+            onChange={handleTokenBChange}></input>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <input
+              className="inputAmount"
+              placeholder="Amount B"
+              type="number"
+              value={amountB}
+              onChange={(e) => setAmountB(e.target.value)}></input>
+            <div className="tokenSymbol">
+              {tokenBSymbolLoading ? (
+                <Spin size="small" />
+              ) : (
+                tokenBSymbol
+              )}
+            </div>
+          </div>
         </div>
       </div>
       <div style={{ marginTop: "20px" }}>

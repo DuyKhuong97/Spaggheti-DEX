@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { ContextWeb3 } from "./context";
+// import { client } from "./sanity";
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -45,7 +46,7 @@ function App() {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
           const contractInstance = new ethers.Contract(
-            "0xFAc4fBb039d90A38FB8314B757A9fb4A3182781B", // contract address
+            "0xaE3B472696EdC807c59F25196831b95e9070D1c6", // contract address
             contractABI, // ABI fetched from endpoint
             signer
           );
@@ -72,6 +73,25 @@ function App() {
   };
   console.log("Address:", address);
   console.log("Is connected:", isConnected);
+
+  // // save address
+  // useEffect(() => {
+  //   const storeUserAddress = async () => {
+  //     if (isConnected && address) {
+  //       try {
+  //         await client.create({
+  //           _type: 'user',
+  //           address: address,
+  //         });
+  //         console.log('User address stored in Sanity Studio:', address);
+  //       } catch (error) {
+  //         console.error('Error storing user address in Sanity Studio:', error);
+  //       }
+  //     }
+  //   };
+
+  //   storeUserAddress();
+  // }, [address, isConnected]);
 
   return (
     <ContextWeb3.Provider value={{ contract, address }}>
