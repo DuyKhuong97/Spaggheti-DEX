@@ -5,6 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { configureChains, mainnet, WagmiConfig, createClient } from 'wagmi'
 import {publicProvider} from 'wagmi/providers/public';
+import './i18n';
 
 const {provider, webSocketProvider} = configureChains(
   [mainnet],

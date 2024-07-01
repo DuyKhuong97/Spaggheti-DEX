@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import { LeftOutlined } from "@ant-design/icons";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -12,6 +13,7 @@ function Token() {
   const { contract } = useContext(ContextWeb3);
   const [tokens, setTokens] = useState([]);
   const navigate = useNavigate();
+  const {t, _} = useTranslation();
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -52,12 +54,12 @@ function Token() {
       key: 'symbol',
     },
     {
-      title: 'Address',
+      title: t('Address'),
       dataIndex: 'address',
       key: 'address',
     },
     {
-      title: 'Reserve',
+      title: t('Reserve'),
       dataIndex: 'reserve',
       key: 'reserve',
     },
@@ -82,7 +84,7 @@ const handleIconClick = () => {
             paddingRight: "130px",
           }}
         >
-          Token List
+          {t("Token List")}
         </h4>
       </div>
       <Table columns={columns} dataSource={tokens} className='customTable' />

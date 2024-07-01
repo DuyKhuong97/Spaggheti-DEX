@@ -5,6 +5,7 @@ import "../App.css";
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Pool() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,8 @@ function Pool() {
   const navigate = useNavigate();
 
   const { contract } = useContext(ContextWeb3);
+
+  const {t, _} = useTranslation();
 
   const handleButtonClick = async () => {
     setIsLoading(true);
@@ -79,21 +82,21 @@ function Pool() {
             paddingRight: "130px",
           }}
         >
-          Add liquidity
+          {t("Add Liquidity")}
         </h4>
       </div>
       <div className="Token">
         <div className="tokenInfor">
           <input
             className="inputAddress"
-            placeholder="Token A address"
+            placeholder={t("Token A address")}
             value={tokenA}
             onChange={handleTokenAChange}
           ></input>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <input
               className="inputAmount"
-              placeholder="Amount A"
+              placeholder={t("Amount A")}
               type="number"
               value={amountA}
               onChange={(e) => setAmountA(e.target.value)}></input>
@@ -109,13 +112,13 @@ function Pool() {
         <div className="tokenInfor">
           <input
             className="inputAddress"
-            placeholder="Token B address"
+            placeholder={t("Token B address")}
             value={tokenB}
             onChange={handleTokenBChange}></input>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <input
               className="inputAmount"
-              placeholder="Amount B"
+              placeholder={t("Amount B")}
               type="number"
               value={amountB}
               onChange={(e) => setAmountB(e.target.value)}></input>
@@ -131,7 +134,7 @@ function Pool() {
       </div>
       <div style={{ marginTop: "20px" }}>
         <Button type="primary" loading={isLoading} onClick={handleButtonClick}>
-          {isLoading ? "Adding Liquidity" : "Add Liquidity"}
+          {isLoading ? t("Adding Liquidity") : t("Add Liquidity")}
         </Button>
       </div>
     </div>
