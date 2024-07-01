@@ -99,4 +99,12 @@ code {
   border-radius: 12px !important;
 }
 
+.ant-select-selector{
+  background-color: #303f68 !important;
+  color: rgb(255, 255, 255) !important;
+  border-color: #303f68 !important;
+}
 
+.ant-select-arrow{
+  color: #4476f3 !important;
+}

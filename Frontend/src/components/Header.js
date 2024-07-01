@@ -56,7 +56,7 @@ function Header(props) {
         <Select
           value={lang}
           style={{
-            width: 120,
+            width: 100,
           }}
           onChange={handleChange}
           options={[

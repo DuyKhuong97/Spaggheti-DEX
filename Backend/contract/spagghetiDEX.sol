@@ -33,6 +33,7 @@ contract spagghetiDex {
         spagghetiToken.grantMinterRole(address(this));
     }
 
+    // Function liquidity
     function addLiquidity(
         address tokenA,
         address tokenB,
@@ -65,7 +66,7 @@ contract spagghetiDex {
     //     address token,
     //     uint256 amount
     // ) internal {
-    //     ERC20(token).approve(to, amount); 
+    //     ERC20(token).approve(to, amount);
     //     ERC20(token).transferFrom(from, to, amount);
     // }
 
@@ -91,20 +92,9 @@ contract spagghetiDex {
         ERC20(tokenB).transfer(msg.sender, amountB);
     }
 
-    function _addTokenIfNotExists(address token) internal {
-        if (!_tokenExists(token)) {
-            string memory tokenSymbol = _getTokenSymbol(token);
-            tokenList.push(
-                TokenInfo({tokenAddress: token, tokenSymbol: tokenSymbol})
-            );
-        }
-    }
-
-    function _getTokenSymbol(address token)
-        public
-        view
-        returns (string memory)
-    {
+    function _getTokenSymbol(
+        address token
+    ) public view returns (string memory) {
         ERC20 tokenContract = ERC20(token);
         return tokenContract.symbol();
     }
@@ -118,10 +108,20 @@ contract spagghetiDex {
         return false;
     }
 
+    function _addTokenIfNotExists(address token) internal {
+        if (!_tokenExists(token)) {
+            string memory tokenSymbol = _getTokenSymbol(token);
+            tokenList.push(
+                TokenInfo({tokenAddress: token, tokenSymbol: tokenSymbol})
+            );
+        }
+    }
+
     function getAllTokens() public view returns (TokenInfo[] memory) {
         return tokenList;
     }
 
+    // Swap function
     function swap(
         address fromToken,
         address toToken,
@@ -158,6 +158,7 @@ contract spagghetiDex {
         return toAmount;
     }
 
+    // Caculated for swap, support show in UI
     function getAmountOfTokens(
         uint256 inputAmountAfterFee,
         uint256 inputReserve,
@@ -171,6 +172,7 @@ contract spagghetiDex {
         return numerator / denominator;
     }
 
+    // Reward point
     function _rewardUser(address user) internal {
         uint256 currentDay = block.timestamp / (24 * 60 * 60);
         if (lastClaimed[user] < currentDay) {
