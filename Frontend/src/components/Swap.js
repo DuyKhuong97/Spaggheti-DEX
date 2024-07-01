@@ -4,6 +4,7 @@ import { AccountBookOutlined, DownOutlined } from "@ant-design/icons";
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Swap({ isConnected, address }) {
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
@@ -16,6 +17,7 @@ function Swap({ isConnected, address }) {
   const [poolTokens, setPoolTokens] = useState([]);
   const navigate = useNavigate();
   const { contract } = useContext(ContextWeb3);
+  const {t, _} = useTranslation();
 
   useEffect(() => {
     const fetchPoolTokens = async () => {
@@ -73,7 +75,7 @@ function Swap({ isConnected, address }) {
         message.error({
           content: (
             <span>
-              Token must be swap by pair, check at{' '}
+              {t("Tokens must be swapped by pair, check at")}{' '}
               <a onClick={(handleIconClick)}>Token list</a>
             </span>
           ),
@@ -142,7 +144,7 @@ function Swap({ isConnected, address }) {
         visible={isOpen}
         footer={null}
         onCancel={() => setIsOpen(false)}
-        title="Select a token"
+        title={t("Select a token")}
       >
         <div className="modalContent">
           {poolTokens.map((token, index) => (
@@ -161,7 +163,7 @@ function Swap({ isConnected, address }) {
       </Modal>
       <div className="tradeBox">
         <div className="tradeBoxHeader">
-          <h4>swap</h4>
+          <h4>{t('SWAP')}</h4>
         </div>
         <div className="inputs">
           <Input
@@ -191,7 +193,7 @@ function Swap({ isConnected, address }) {
           disabled={!tokenOneAmount || !calculatedTokenTwoAmount}
           onClick={handleSwap}
         >
-          swap
+          {t('SWAP')}
         </div>
       </div>
     </>
