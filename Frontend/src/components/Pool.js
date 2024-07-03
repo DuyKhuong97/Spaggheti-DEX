@@ -78,8 +78,8 @@ function Pool() {
           style={{
             justifyContent: "center",
             textAlign: "center",
-            paddingLeft: "140px",
-            paddingRight: "130px",
+            paddingLeft: "130px",
+            paddingRight: "100px",
           }}
         >
           {t("Add Liquidity")}

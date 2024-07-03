@@ -279,6 +279,7 @@ header {
   margin-bottom: 10px;
   font-size: 20px;
   border-radius: 12px;
+  padding-left: 20px;
 }
 
 .inputAmount {
@@ -290,6 +291,7 @@ header {
   margin-bottom: 10px;
   font-size: 20px;
   border-radius: 12px;
+  padding-left: 20px;
 }
 .tokenInfor{
   display: flex;
@@ -352,3 +354,4 @@ input::-webkit-inner-spin-button {
   font-size: 20px;
   border-radius: 12px;
 }
+

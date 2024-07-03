@@ -65,7 +65,7 @@ function Header(props) {
           <div className='headerItem'>TOKEN</div>
         </Link>
         <Link to="/Pool" className="link">
-          <div className='headerItem'>POOL</div>
+          <div className='headerItem'>{t('POOL')}</div>
         </Link>
 
       </div>
@@ -81,7 +81,7 @@ function Header(props) {
         <Select
           value={lang}
           style={{
-            width: 100,
+            width: 120,
           }}
           onChange={handleChange}
           options={[
