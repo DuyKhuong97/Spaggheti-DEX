@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   en: {
     translation: {
+      "POOL": "POOL",
       "SWAP": "SWAP",
       "Connect Wallet": "Connect Wallet",
       "Add liquidity": "Add liquidity",
@@ -21,7 +22,8 @@ const resources = {
   },
   vi: {
     translation: {
-        "SWAP": "ĐỔI",
+        "POOL": "THANH KHOẢN",
+        "SWAP": "ĐỔI TOKEN",
         "Connect Wallet": "Kết nối ví",
         "Add Liquidity": "Thêm thanh khoản",
         "Adding Liquidity": "Đang thêm thanh khoản",
@@ -32,7 +34,7 @@ const resources = {
         "Select a token": "Chọn một token",
         "Tokens must be swapped by pair, check at": "Các token phải được đổi theo cặp, kiểm tra tại",
         "Address": "Địa chỉ",
-        "Reserve": "Còn",
+        "Reserve": "Số lượng",
         "Token List": "Danh sách token"
     }
   }

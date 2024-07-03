@@ -80,7 +80,7 @@ const handleIconClick = () => {
           style={{
             justifyContent: "center",
             textAlign: "center",
-            paddingLeft: "140px",
+            paddingLeft: "120px",
             paddingRight: "130px",
           }}
         >
