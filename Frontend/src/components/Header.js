@@ -4,7 +4,8 @@ import Eth from "../logo/eth.svg";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
-import { dataClient } from "../../../Backend/database";
+// import { client } from "../../../Backend/database";
+
 
 function Header(props) {
   const { address, isConnected, connect } = props;
@@ -29,31 +30,29 @@ function Header(props) {
       setLang(value);
     });
   }
-  const saveUserHash = async (userAddress) => {
-    if (!contract) {
-      console.error('Contract is not available');
-      return;
-    }
 
+  // const saveUserHash = async (userAddress) => {
+
+  //     await address.setUserHash(userAddress);
+  //     const userHash = await address.getUserHash(userAddress);
+
+  //     await client.create({
+  //       _type: 'userHash',
+  //       address: userAddress,
+  //       hash: userHash,
+  //     });
+
+  //     console.log(saveUserHash,'User hash saved successfully');
+  //   }
+  const getUserHash = async (userAddress) => {
     try {
-      // Gọi hàm setUserHash từ hợp đồng của bạn
-      await contract.setUserHash(userAddress);
-
-      // Lấy userHash từ hợp đồng
-      const userHash = await contract.getUserHash(userAddress);
-
-      // Lưu hash vào Sanity
-      await client.create({
-        _type: 'userHash',
-        address: userAddress,
-        hash: userHash,
-      });
-
-      console.log('User hash saved successfully');
+      const userHash = await address.setUserHash(userAddress);
+      console.log('User hash:', userHash);
     } catch (error) {
-      console.error('Error saving user hash:', error);
+      console.error('Error getting user hash:', error);
     }
   }
+
   return (
     <header>
       <div className='leftH'>

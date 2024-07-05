@@ -11,8 +11,8 @@ function Pool() {
   const [isLoading, setIsLoading] = useState(false);
   const [tokenA, setTokenA] = useState("");
   const [tokenB, setTokenB] = useState("");
-  const [amountA, setAmountA] = useState(0);
-  const [amountB, setAmountB] = useState(0);
+  const [amountA, setAmountA] = useState("");
+  const [amountB, setAmountB] = useState("");
   const [tokenASymbol, setTokenASymbol] = useState("");
   const [tokenASymbolLoading, setTokenASymbolLoading] = useState(false);
   const [tokenBSymbol, setTokenBSymbol] = useState("");
@@ -24,14 +24,35 @@ function Pool() {
 
   const {t, _} = useTranslation();
 
+  const ABI = [
+    "function approve(address spender, uint256 amount) public returns (bool)",
+    "function allowance(address owner, address spender) public view returns (uint256)",
+    "function balanceOf(address account) public view returns (uint256)",
+    "function decimals() public view returns (uint8)",
+    "function symbol() public view returns (string)"
+  ];
+
+  const approveToken = async (tokenAddress, spenderAddress, amount) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const tokenContract = new ethers.Contract(tokenAddress, ABI, signer);
+    const tx = await tokenContract.approve(spenderAddress, amount);
+    await tx.wait();
+    console.log(`Approved ${amount} tokens for ${spenderAddress}`);
+  };
+
   const handleButtonClick = async () => {
     setIsLoading(true);
     try {
       const signer = new ethers.providers.Web3Provider(window.ethereum).getSigner();
       const contractWithSigner = contract.connect(signer);
-
+      
       const amountAConver = ethers.utils.parseEther(amountA.toString());
       const amountBConver = ethers.utils.parseEther(amountB.toString());
+      
+      await approveToken(tokenA, contractWithSigner.address, amountAConver);
+      await approveToken(tokenA, contractWithSigner.address, amountAConver);
+      
       await contractWithSigner.addLiquidity(tokenA, tokenB, amountAConver, amountBConver);
       console.log("Liquidity added successfully!");
 

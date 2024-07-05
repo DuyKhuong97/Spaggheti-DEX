@@ -14,7 +14,10 @@ function Token() {
   const [tokens, setTokens] = useState([]);
   const navigate = useNavigate();
   const {t, _} = useTranslation();
-
+  const ABI = [
+    "function symbol() view returns (string)",
+              "function balanceOf(address) view returns (uint256)"
+  ];
   useEffect(() => {
     const fetchTokens = async () => {
       if (contract) {
@@ -22,10 +25,7 @@ function Token() {
           const tokenList = await contract.getAllTokens();
           console.log(tokenList);
           const tokenData = await Promise.all(tokenList.map(async (token, index) => {
-            const tokenContract = new ethers.Contract(token.tokenAddress, [
-              "function symbol() view returns (string)",
-              "function balanceOf(address) view returns (uint256)"
-            ], contract.provider);
+            const tokenContract = new ethers.Contract(token.tokenAddress, ABI, contract.provider);
             console.log(tokenContract);
             const symbol = await tokenContract.symbol();
             const reserve = await tokenContract.balanceOf(contract.address);

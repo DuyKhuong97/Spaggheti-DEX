@@ -9,3 +9,11 @@ token B: 0xaeCf92ED261e63a29Dc1D4f6Bd8b422A64E26Bc8
 
 First: cd D:\Code\Spaggheti-DEX\Backend\spagghetidex - to enter project’s directory
 Then: npm run dev - to run Sanity Studio
+
+
+
+
+- Bảo mật: safeERC20
+- gitingnore
+- package.json, thêm eslint
+- 
