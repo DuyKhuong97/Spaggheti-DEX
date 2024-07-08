@@ -46,7 +46,7 @@ function App() {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
           const contractInstance = new ethers.Contract(
-            "0xaE3B472696EdC807c59F25196831b95e9070D1c6", // contract address
+            "0x8A470a21A648FdFc4e15987f7Ba90285A76C92Ae", // contract address
             contractABI, // ABI fetched from endpoint
             signer
           );
