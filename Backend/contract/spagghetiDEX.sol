@@ -5,9 +5,12 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Spaggheti.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract spagghetiDex {
     using Math for uint256;
+    using SafeERC20 for ERC20;
+
     //Liqui pool
     struct TokenInfo {
         address tokenAddress;
@@ -22,18 +25,15 @@ contract spagghetiDex {
     mapping(address => uint256) public lastClaimed;
     mapping(address => uint256) public dailyReward;
     //DEX security
-    mapping(address => bytes32) public userHashes;
-
     Spaggheti public spagghetiToken;
 
     constructor() {
-        spagghetiToken = Spaggheti(0xF214BD0c851EaB46FBd7d605A8E4D246791fb3c3);
+        spagghetiToken = Spaggheti(0x86da6da480FA03709ec5c2c9F77ffAA568bFa9D2);
 
-        // require(spagghetiToken.owner() == msg.sender);
+        require(spagghetiToken.owner() == msg.sender);
         spagghetiToken.grantMinterRole(address(this));
     }
 
-    // Function liquidity
     function addLiquidity(
         address tokenA,
         address tokenB,
@@ -48,11 +48,8 @@ contract spagghetiDex {
         _addTokenIfNotExists(tokenA);
         _addTokenIfNotExists(tokenB);
 
-        ERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
-        ERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
-
-        // _transferTokensFrom(msg.sender, address(this), tokenA, amountA);
-        // _transferTokensFrom(msg.sender, address(this), tokenB, amountB);
+        ERC20(tokenA).safeTransferFrom(msg.sender, address(this), amountA);
+        ERC20(tokenB).safeTransferFrom(msg.sender, address(this), amountB);
 
         tokenReserves[tokenA][tokenB] += amountA;
         tokenReserves[tokenB][tokenA] += amountB;
@@ -60,15 +57,6 @@ contract spagghetiDex {
         _rewardUser(msg.sender);
     }
 
-    // function _transferTokensFrom(
-    //     address from,
-    //     address to,
-    //     address token,
-    //     uint256 amount
-    // ) internal {
-    //     ERC20(token).approve(to, amount);
-    //     ERC20(token).transferFrom(from, to, amount);
-    // }
 
     function removeLiquidity(
         address tokenA,
@@ -88,13 +76,24 @@ contract spagghetiDex {
         tokenReserves[tokenA][tokenB] -= amountA;
         tokenReserves[tokenB][tokenA] -= amountB;
 
-        ERC20(tokenA).transfer(msg.sender, amountA);
-        ERC20(tokenB).transfer(msg.sender, amountB);
+        ERC20(tokenA).safeTransfer(msg.sender, amountA);
+        ERC20(tokenB).safeTransfer(msg.sender, amountB);
     }
 
-    function _getTokenSymbol(
-        address token
-    ) public view returns (string memory) {
+    function _addTokenIfNotExists(address token) internal {
+        if (!_tokenExists(token)) {
+            string memory tokenSymbol = _getTokenSymbol(token);
+            tokenList.push(
+                TokenInfo({tokenAddress: token, tokenSymbol: tokenSymbol})
+            );
+        }
+    }
+
+    function _getTokenSymbol(address token)
+        public
+        view
+        returns (string memory)
+    {
         ERC20 tokenContract = ERC20(token);
         return tokenContract.symbol();
     }
@@ -108,20 +107,10 @@ contract spagghetiDex {
         return false;
     }
 
-    function _addTokenIfNotExists(address token) internal {
-        if (!_tokenExists(token)) {
-            string memory tokenSymbol = _getTokenSymbol(token);
-            tokenList.push(
-                TokenInfo({tokenAddress: token, tokenSymbol: tokenSymbol})
-            );
-        }
-    }
-
     function getAllTokens() public view returns (TokenInfo[] memory) {
         return tokenList;
     }
 
-    // Swap function
     function swap(
         address fromToken,
         address toToken,
@@ -147,18 +136,17 @@ contract spagghetiDex {
             "Not enough liquidity in pool"
         );
 
-        ERC20(fromToken).transferFrom(msg.sender, address(this), fromAmount);
-        ERC20(toToken).transfer(msg.sender, toAmount);
+        ERC20(fromToken).safeTransferFrom(msg.sender, address(this), fromAmount);
+        ERC20(toToken).safeTransfer(msg.sender, toAmount);
 
         tokenReserves[fromToken][toToken] += fromAmount;
         tokenReserves[toToken][fromToken] -= toAmount;
 
-        ERC20(fromToken).transfer(spagghetiToken.owner(), fee);
+        ERC20(fromToken).safeTransfer(spagghetiToken.owner(), fee);
 
         return toAmount;
     }
 
-    // Caculated for swap, support show in UI
     function getAmountOfTokens(
         uint256 inputAmountAfterFee,
         uint256 inputReserve,
@@ -172,7 +160,6 @@ contract spagghetiDex {
         return numerator / denominator;
     }
 
-    // Reward point
     function _rewardUser(address user) internal {
         uint256 currentDay = block.timestamp / (24 * 60 * 60);
         if (lastClaimed[user] < currentDay) {
@@ -188,16 +175,5 @@ contract spagghetiDex {
 
         dailyReward[user] += reward;
         spagghetiToken.mintForPool(user, reward);
-    }
-
-    // Securiry zone
-
-    function setUserHash(address user) public {
-        bytes32 userHash = keccak256(abi.encodePacked(user));
-        userHashes[user] = userHash;
-    }
-
-    function getUserHash(address user) public view returns (bytes32) {
-        return userHashes[user];
     }
 }

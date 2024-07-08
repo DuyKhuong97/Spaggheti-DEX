@@ -4,8 +4,6 @@ import Eth from "../logo/eth.svg";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
-// import { client } from "../../../Backend/database";
-
 
 function Header(props) {
   const { address, isConnected, connect } = props;
@@ -29,28 +27,6 @@ function Header(props) {
     }).then(() => {
       setLang(value);
     });
-  }
-
-  // const saveUserHash = async (userAddress) => {
-
-  //     await address.setUserHash(userAddress);
-  //     const userHash = await address.getUserHash(userAddress);
-
-  //     await client.create({
-  //       _type: 'userHash',
-  //       address: userAddress,
-  //       hash: userHash,
-  //     });
-
-  //     console.log(saveUserHash,'User hash saved successfully');
-  //   }
-  const getUserHash = async (userAddress) => {
-    try {
-      const userHash = await address.setUserHash(userAddress);
-      console.log('User hash:', userHash);
-    } catch (error) {
-      console.error('Error getting user hash:', error);
-    }
   }
 
   return (

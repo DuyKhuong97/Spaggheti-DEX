@@ -12,8 +12,3 @@ Then: npm run dev - to run Sanity Studio
 
 
 
-
-- Bảo mật: safeERC20
-- gitingnore
-- package.json, thêm eslint
-- 

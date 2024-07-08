@@ -11,8 +11,8 @@ function Pool() {
   const [isLoading, setIsLoading] = useState(false);
   const [tokenA, setTokenA] = useState("");
   const [tokenB, setTokenB] = useState("");
-  const [amountA, setAmountA] = useState("");
-  const [amountB, setAmountB] = useState("");
+  const [amountA, setAmountA] = useState(0);
+  const [amountB, setAmountB] = useState(0);
   const [tokenASymbol, setTokenASymbol] = useState("");
   const [tokenASymbolLoading, setTokenASymbolLoading] = useState(false);
   const [tokenBSymbol, setTokenBSymbol] = useState("");
@@ -41,21 +41,24 @@ function Pool() {
     console.log(`Approved ${amount} tokens for ${spenderAddress}`);
   };
 
+
   const handleButtonClick = async () => {
     setIsLoading(true);
     try {
       const signer = new ethers.providers.Web3Provider(window.ethereum).getSigner();
       const contractWithSigner = contract.connect(signer);
-      
+  
       const amountAConver = ethers.utils.parseEther(amountA.toString());
       const amountBConver = ethers.utils.parseEther(amountB.toString());
-      
-      await approveToken(tokenA, contractWithSigner.address, amountAConver);
-      await approveToken(tokenA, contractWithSigner.address, amountAConver);
-      
-      await contractWithSigner.addLiquidity(tokenA, tokenB, amountAConver, amountBConver);
+  
+      await Promise.all([
+        approveToken(tokenA, contractWithSigner.address, amountAConver),
+        approveToken(tokenB, contractWithSigner.address, amountAConver),
+      ]);
+  
+      await contractWithSigner.addLiquidity(tokenA, tokenB, amountAConver, amountBConver, { gasLimit: 1000000 });
       console.log("Liquidity added successfully!");
-
+  
     } catch (error) {
       console.error("Error adding liquidity:", error);
     } finally {
