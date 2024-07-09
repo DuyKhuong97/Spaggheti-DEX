@@ -17,7 +17,11 @@ const resources = {
       "Tokens must be swapped by pair, check at": "Tokens must be swapped by pair, check at",
       "Address": "Address",
       "Reserve": "Reserve",
-      "Token List": "Token List"
+      "Token List": "Token List",
+      "sent": "liquidity request sent!",
+      "Check progress": "Check you Metamask for progress",
+      "Swap done": "Swap successful!",
+      "Check reward": ""
     }
   },
   vi: {
@@ -35,7 +39,9 @@ const resources = {
         "Tokens must be swapped by pair, check at": "Các token phải được đổi theo cặp, kiểm tra tại",
         "Address": "Địa chỉ",
         "Reserve": "Số lượng",
-        "Token List": "Danh sách token"
+        "Token List": "Danh sách token",
+        "sent": "Gửi yêu cầu thêm thanh khoản thành công",
+        "Check progress": "Kiểm tra ví Metamask thông tin chi tiết"
     }
   }
 };

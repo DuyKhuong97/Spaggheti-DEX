@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react'
 import Logo from "../logo/spaghetti-svgrepo-com.svg";
 import Eth from "../logo/eth.svg";
@@ -22,6 +23,7 @@ function Header(props) {
 
 
   const handleChange = (value) => {
+    // eslint-disable-next-line no-unused-vars
     i18n.changeLanguage(value, (err, _) => {
       if (err) return console.log('something went wrong loading', err);
     }).then(() => {

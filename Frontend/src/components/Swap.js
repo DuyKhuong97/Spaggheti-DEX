@@ -76,7 +76,7 @@ function Swap({ isConnected, address }) {
           content: (
             <span>
               {t("Tokens must be swapped by pair, check at")}{' '}
-              <a onClick={(handleIconClick)}>Token list</a>
+              <a href='/' onClick={(handleIconClick)}>Token list</a>
             </span>
           ),
           duration: 5,
@@ -128,10 +128,11 @@ function Swap({ isConnected, address }) {
       const tx = await contract.swap(
         tokenOne.address,
         tokenTwo.address,
-        ethers.utils.parseEther(tokenOneAmount.toString())
+        ethers.utils.parseEther(tokenOneAmount.toString()),
+        { gasLimit: 1000000 }
       );
       console.log("Swap transaction:", tx);
-      message.success("Swap successful!");
+      message.success(t("Swap done"));
     } catch (error) {
       console.error("Error swapping tokens:", error);
       message.error("Failed to swap tokens");
