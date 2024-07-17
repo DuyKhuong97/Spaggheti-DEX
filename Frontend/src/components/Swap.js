@@ -17,6 +17,7 @@ function Swap({ isConnected, address }) {
   const [poolTokens, setPoolTokens] = useState([]);
   const navigate = useNavigate();
   const { contract } = useContext(ContextWeb3);
+  // eslint-disable-next-line no-unused-vars
   const {t, _} = useTranslation();
 
   useEffect(() => {

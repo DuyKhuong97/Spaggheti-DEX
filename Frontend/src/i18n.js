@@ -20,8 +20,7 @@ const resources = {
       "Token List": "Token List",
       "sent": "liquidity request sent!",
       "Check progress": "Check you Metamask for progress",
-      "Swap done": "Swap successful!",
-      "Check reward": ""
+      "Swap done": "Swap successful!"
     }
   },
   vi: {
@@ -41,7 +40,8 @@ const resources = {
         "Reserve": "Số lượng",
         "Token List": "Danh sách token",
         "sent": "Gửi yêu cầu thêm thanh khoản thành công",
-        "Check progress": "Kiểm tra ví Metamask thông tin chi tiết"
+        "Check progress": "Kiểm tra ví Metamask thông tin chi tiết",
+        "Swap done": "Trao đổi token thành công!"
     }
   }
 };
