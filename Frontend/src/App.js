@@ -28,7 +28,7 @@ function App() {
       try {
         console.log("Fetching contract ABI...");
         const response = await axios.get(
-          "http://localhost:5000/artifacts/spagghetiDex.json"
+          "http://localhost:5001/artifacts/spagghetiDex.json"
         );
         console.log("Contract ABI fetched:", response.data.abi);
         setContractABI(response.data.abi);
