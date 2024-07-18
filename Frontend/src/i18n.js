@@ -20,28 +20,32 @@ const resources = {
       "Token List": "Token List",
       "sent": "liquidity request sent!",
       "Check progress": "Check you Metamask for progress",
-      "Swap done": "Swap successful!"
+      "Swap done": "Swap successful!",
+      "FEE": "FEE",
+      "Award": "Receive 0,01 SPD (0,05/day)"
     }
   },
   vi: {
     translation: {
-        "POOL": "THANH KHOẢN",
-        "SWAP": "ĐỔI TOKEN",
-        "Connect Wallet": "Kết nối ví",
-        "Add Liquidity": "Thêm thanh khoản",
-        "Adding Liquidity": "Đang thêm thanh khoản",
-        "Amount A": "Số lượng A",
-        "Amount B": "Số lượng B",
-        "Token A address": "Địa chỉ A",
-        "Token B address": "Địa chỉ B",
-        "Select a token": "Chọn một token",
-        "Tokens must be swapped by pair, check at": "Các token phải được đổi theo cặp, kiểm tra tại",
-        "Address": "Địa chỉ",
-        "Reserve": "Số lượng",
-        "Token List": "Danh sách token",
-        "sent": "Gửi yêu cầu thêm thanh khoản thành công",
-        "Check progress": "Kiểm tra ví Metamask thông tin chi tiết",
-        "Swap done": "Trao đổi token thành công!"
+      "POOL": "THANH KHOẢN",
+      "SWAP": "ĐỔI TOKEN",
+      "Connect Wallet": "Kết nối ví",
+      "Add Liquidity": "Thêm thanh khoản",
+      "Adding Liquidity": "Đang thêm thanh khoản",
+      "Amount A": "Số lượng A",
+      "Amount B": "Số lượng B",
+      "Token A address": "Địa chỉ A",
+      "Token B address": "Địa chỉ B",
+      "Select a token": "Chọn một token",
+      "Tokens must be swapped by pair, check at": "Các token phải được đổi theo cặp, kiểm tra tại",
+      "Address": "Địa chỉ",
+      "Reserve": "Số lượng",
+      "Token List": "Danh sách token",
+      "sent": "Gửi yêu cầu thêm thanh khoản thành công",
+      "Check progress": "Kiểm tra ví Metamask thông tin chi tiết",
+      "Swap done": "Trao đổi token thành công!",
+      "FEE": "Phí",
+      "Award": "Giao dịch nhận 0,01 SPD (0,05/ngày)"
     }
   }
 };
@@ -57,7 +61,7 @@ i18n
   });
 
 i18n.on("languageChanged", lng => {
-    localStorage.setItem('lang', lng);
-  });
+  localStorage.setItem('lang', lng);
+});
 
-  export default i18n;
+export default i18n;

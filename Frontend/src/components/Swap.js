@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useContext } from "react";
 import { Input, Modal, message } from "antd";
 import { AccountBookOutlined, DownOutlined } from "@ant-design/icons";
@@ -6,6 +7,7 @@ import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+// eslint-disable-next-line no-unused-vars
 function Swap({ isConnected, address }) {
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
   const [calculatedTokenTwoAmount, setCalculatedTokenTwoAmount] =
@@ -166,6 +168,7 @@ function Swap({ isConnected, address }) {
       <div className="tradeBox">
         <div className="tradeBoxHeader">
           <h4>{t('SWAP')}</h4>
+          <h6>{t('FEE')} 0,01%</h6>
         </div>
         <div className="inputs">
           <Input

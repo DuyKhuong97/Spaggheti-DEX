@@ -28,7 +28,7 @@ contract spagghetiDex {
     Spaggheti public spagghetiToken;
 
     constructor() {
-        spagghetiToken = Spaggheti(0x86da6da480FA03709ec5c2c9F77ffAA568bFa9D2);
+        spagghetiToken = Spaggheti(0x568b525ce99AaCa276AB836Cf106A0D5f771810c);
 
         require(spagghetiToken.owner() == msg.sender);
         spagghetiToken.grantMinterRole(address(this));
@@ -166,7 +166,7 @@ contract spagghetiDex {
             dailyReward[user] = 0;
             lastClaimed[user] = currentDay;
         }
-        require(dailyReward[user] < 5e16, "Daily reward limit reached"); // 0.5 SPD limit per day
+        require(dailyReward[user] < 5e16, "Daily reward limit reached");
 
         uint256 reward = rewardAmount;
         if (dailyReward[user] + reward > 5e16) {

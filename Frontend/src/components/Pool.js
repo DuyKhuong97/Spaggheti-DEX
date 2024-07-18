@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useContext } from "react";
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Spin, Alert } from "antd";
+import { Button, Spin, Alert, Tooltip } from "antd";
 import "../App.css";
 import { ContextWeb3 } from "../context";
 import { ethers } from "ethers";
@@ -107,7 +107,7 @@ function Pool() {
       setTokenBSymbolLoading(false);
     }, 2000);
   };
-
+  
   return (
     <div className="tradeBox" style={{ height: "450px" }}>
       <div style={{ display: "flex" }}>
@@ -175,9 +175,13 @@ function Pool() {
         </div>
       </div>
       <div style={{ marginTop: "20px" }}>
+       <Tooltip title={t("Award")} placement="bottom" color="#182234">
         <Button type="primary" loading={isLoading} onClick={handleButtonClick}>
           {isLoading ? t("Adding Liquidity") : t("Add Liquidity")}
         </Button>
+        </Tooltip>
+
+
       </div>
       {showSuccessAdd && (
         <Alert
